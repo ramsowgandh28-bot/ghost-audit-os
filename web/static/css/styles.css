@@ -1,0 +1,47 @@
+/* Ghost Audit OS Custom Styles */
+
+/* Tab transitions */
+.tab-btn {
+  border-bottom-color: transparent;
+}
+
+.tab-btn.active {
+  border-bottom-color: #10b981;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.status-filter-btn.active {
+  background-color: #1e293b;
+  border-color: #475569;
+  color: #ffffff;
+}
+
+/* Animations */
+@keyframes pulseSubtle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-pulse-subtle {
+  animation: pulseSubtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #090d16;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}

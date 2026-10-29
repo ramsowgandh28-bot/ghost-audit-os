@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ghost Audit OS — Enterprise Deletion-Audit & Verification Platform</title>
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Ghost Audit OS is an enterprise AI deletion-audit platform for verifying GDPR/CCPA data sanitization across replicas, logs, backups, and data connectors.">
+  <meta name="keywords" content="deletion audit, GDPR compliance, data sanitization, ghost data, compliance verification, HackerRank Orchestrate">
+  <meta property="og:title" content="Ghost Audit OS — Enterprise Deletion-Audit & Verification Platform">
+  <meta property="og:description" content="AI-powered deletion-audit engine proving whether personal data was truly deleted across databases, logs, replicas, and backups.">
+  <meta property="og:url" content="https://ghost-audit-os.onrender.com/">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://ghost-audit-os.onrender.com/">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+            },
+            slate: {
+              850: '#111827',
+              900: '#0f172a',
+              950: '#020617',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col antialiased selection:bg-emerald-500/30 selection:text-emerald-300">
+
+  <!-- Top Navigation Bar -->
+  <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/20 text-white font-bold text-xl">
+          👻
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="font-bold text-lg tracking-tight text-white">Ghost Audit OS</span>
+            <span class="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Production Ready</span>
+          </div>
+          <p class="text-xs text-slate-400 hidden sm:block">HackerRank Orchestrate 2026 &bull; Ghost Data Still Exists</p>
+        </div>
+      </div>
+
+      <!-- Quick System Status Indicators -->
+      <div class="flex items-center space-x-4">
+        <div class="hidden md:flex items-center space-x-2 text-xs text-slate-300 bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Engine: <strong id="header-engine-status" class="text-emerald-400">Ready</strong></span>
+          <span class="text-slate-600">|</span>
+          <span>Cases: <strong id="header-case-count" class="text-white">518</strong></span>
+          <span class="text-slate-600">|</span>
+          <span>Evidence: <strong class="text-white">94 Files</strong></span>
+        </div>
+
+        <a href="https://www.hackerrank.com/contests/hackerrank-orchestrate-october26/challenges/ghost-data-still-exists" target="_blank" rel="noopener" class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 rounded-lg font-medium transition shadow-md shadow-emerald-600/20 flex items-center space-x-1.5">
+          <span>Portal</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="border-t border-slate-800/80 bg-slate-900/60 overflow-x-auto scrollbar-none">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-1 text-sm font-medium">
+        <button onclick="switchTab('operations')" id="tab-btn-operations" class="tab-btn active px-4 py-3 border-b-2 flex items-center space-x-2 text-slate-300 hover:text-white transition">
+          <span>⚡</span><span>Audit Operations</span>
+        </button>
+        <button onclick="switchTab('results')" id="tab-btn-results" class="tab-btn px-4 py-3 border-b-2 flex items-center space-x-2 text-slate-400 hover:text-white transition">
+          <span>📋</span><span>Results Explorer</span>
+          <span id="badge-results-count" class="ml-1 px-1.5 py-0.5 text-[11px] rounded bg-slate-800 text-slate-300">518</span>
+        </button>
+        <button onclick="switchTab('validator')" id="tab-btn-validator" class="tab-btn px-4 py-3 border-b-2 flex items-center space-x-2 text-slate-400 hover:text-white transition">
+          <span>🛡️</span><span>Contract Validator</span>
+          <span id="badge-validator-status" class="ml-1 px-1.5 py-0.5 text-[11px] rounded bg-emerald-950 text-emerald-400 border border-emerald-800">12/12</span>
+        </button>
+        <button onclick="switchTab('benchmark')" id="tab-btn-benchmark" class="tab-btn px-4 py-3 border-b-2 flex items-center space-x-2 text-slate-400 hover:text-white transition">
+          <span>📊</span><span>Public Benchmark</span>
+          <span class="ml-1 px-1.5 py-0.5 text-[11px] rounded bg-emerald-950 text-emerald-400 border border-emerald-800">100%</span>
+        </button>
+        <button onclick="switchTab('evidence')" id="tab-btn-evidence" class="tab-btn px-4 py-3 border-b-2 flex items-center space-x-2 text-slate-400 hover:text-white transition">
+          <span>🗂️</span><span>Evidence Manifest</span>
+          <span class="ml-1 px-1.5 py-0.5 text-[11px] rounded bg-slate-800 text-slate-300">94</span>
+        </button>
+        <button onclick="switchTab('artifacts')" id="tab-btn-artifacts" class="tab-btn px-4 py-3 border-b-2 flex items-center space-x-2 text-slate-400 hover:text-white transition">
+          <span>📦</span><span>Downloads & Artifacts</span>
+        </button>
+        <button onclick="switchTab('architecture')" id="tab-btn-architecture" class="tab-btn px-4 py-3 border-b-2 flex items-center space-x-2 text-slate-400 hover:text-white transition">
+          <span>ℹ️</span><span>Architecture & Policy</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- ======================================================== -->
+    <!-- TAB 1: AUDIT OPERATIONS                                  -->
+    <!-- ======================================================== -->
+    <section id="view-operations" class="tab-view space-y-6">
+      
+      <!-- Top Banner / Summary Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-slate-400 font-medium">Scored Dataset Cases</span>
+            <span class="text-emerald-400 text-xs">● Evaluated</span>
+          </div>
+          <div class="mt-2 flex items-baseline space-x-2">
+            <span class="text-2xl font-bold text-white" id="op-total-cases">518</span>
+            <span class="text-xs text-slate-500">requests</span>
+          </div>
+          <p class="text-xs text-slate-500 mt-1">Contiguous IDs: case_33 to case_550</p>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-slate-400 font-medium">Deletion Incomplete</span>
+            <span class="text-rose-400 text-xs font-semibold">Ghost Data Detected</span>
+          </div>
+          <div class="mt-2 flex items-baseline space-x-2">
+            <span class="text-2xl font-bold text-rose-400" id="op-incomplete-cases">320</span>
+            <span class="text-xs text-slate-500">61.8%</span>
+          </div>
+          <p class="text-xs text-slate-500 mt-1">Requires finding & remediation</p>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-slate-400 font-medium">Deletion Complete</span>
+            <span class="text-emerald-400 text-xs font-semibold">Verified Safe</span>
+          </div>
+          <div class="mt-2 flex items-baseline space-x-2">
+            <span class="text-2xl font-bold text-emerald-400" id="op-complete-cases">188</span>
+            <span class="text-xs text-slate-500">36.3%</span>
+          </div>
+          <p class="text-xs text-slate-500 mt-1">Evidence-backed verification</p>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-sm">
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-slate-400 font-medium">Not Applicable</span>
+            <span class="text-amber-400 text-xs font-semibold">Non-Deletion</span>
+          </div>
+          <div class="mt-2 flex items-baseline space-x-2">
+            <span class="text-2xl font-bold text-amber-400" id="op-na-cases">10</span>
+            <span class="text-xs text-slate-500">1.9%</span>
+          </div>
+          <p class="text-xs text-slate-500 mt-1">Empty steps_json = []</p>
+        </div>
+      </div>
+
+      <!-- Main Run Configuration & Live Execution Box -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Left: Execution Controls Card -->
+        <div class="lg:col-span-1 bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-5">
+          <div>
+            <h3 class="text-base font-semibold text-white flex items-center space-x-2">
+              <span>⚙️</span>
+              <span>Audit Run Configuration</span>
+            </h3>
+            <p class="text-xs text-slate-400 mt-1">Execute the real multi-stage Python deletion-audit engine across evidence.</p>
+          </div>
+
+          <div class="space-y-3">
+            <label class="block text-xs font-medium text-slate-300">Select Input Dataset</label>
+            <div class="space-y-2">
+              <label class="flex items-center space-x-3 p-3 rounded-lg border border-slate-800 bg-slate-850/50 hover:bg-slate-800/50 cursor-pointer transition">
+                <input type="radio" name="dataset_type" value="default" checked class="text-emerald-500 focus:ring-emerald-500 bg-slate-900 border-slate-700">
+                <div class="text-xs">
+                  <div class="font-medium text-white">Scored Evaluation Dataset</div>
+                  <div class="text-slate-400">dataset/deletion_requests.csv (518 cases)</div>
+                </div>
+              </label>
+
+              <label class="flex items-center space-x-3 p-3 rounded-lg border border-slate-800 bg-slate-850/50 hover:bg-slate-800/50 cursor-pointer transition">
+                <input type="radio" name="dataset_type" value="sample" class="text-emerald-500 focus:ring-emerald-500 bg-slate-900 border-slate-700">
+                <div class="text-xs">
+                  <div class="font-medium text-white">Public Benchmark Dataset</div>
+                  <div class="text-slate-400">dataset/sample_deletion_requests.csv (32 cases)</div>
+                </div>
+              </label>
+
+              <label class="flex items-center space-x-3 p-3 rounded-lg border border-slate-800 bg-slate-850/50 hover:bg-slate-800/50 cursor-pointer transition">
+                <input type="radio" name="dataset_type" value="uploaded" class="text-emerald-500 focus:ring-emerald-500 bg-slate-900 border-slate-700">
+                <div class="text-xs">
+                  <div class="font-medium text-white">Custom Uploaded CSV</div>
+                  <div class="text-slate-400">Upload a custom deletion_requests.csv file</div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Upload Dropzone (shown when uploaded is chosen) -->
+          <div id="upload-container" class="hidden space-y-2">
+            <label class="block text-xs font-medium text-slate-300">Upload CSV File</label>
+            <input type="file" id="custom-csv-file" accept=".csv" class="block w-full text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-emerald-400 hover:file:bg-slate-700 cursor-pointer">
+          </div>
+
+          <div class="pt-2 border-t border-slate-800 space-y-3">
+            <button onclick="startAuditRun()" id="btn-start-audit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2.5 px-4 rounded-lg text-sm transition shadow-lg shadow-emerald-600/20 flex items-center justify-center space-x-2">
+              <span id="btn-start-icon">▶</span>
+              <span id="btn-start-text">Run Deletion Audit</span>
+            </button>
+
+            <button onclick="validateInputSchema()" class="w-full bg-slate-800 hover:bg-slate-750 text-slate-300 font-medium py-2 px-4 rounded-lg text-xs transition border border-slate-700 flex items-center justify-center space-x-2">
+              <span>🔍</span>
+              <span>Validate Input CSV Schema</span>
+            </button>
+          </div>
+
+          <div id="input-validation-msg" class="text-xs p-3 rounded-lg hidden"></div>
+        </div>
+
+        <!-- Right: Execution Monitor & Real-Time Engine Trace -->
+        <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-5 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-base font-semibold text-white flex items-center space-x-2">
+                  <span>📡</span>
+                  <span>Engine Live Execution Monitor</span>
+                </h3>
+                <p class="text-xs text-slate-400 mt-1">Real-time status of historical timeline resolution, evidence parsing, and decision logic.</p>
+              </div>
+              <span id="status-pill" class="text-xs px-2.5 py-1 rounded-full font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                COMPLETED
+              </span>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="mt-6 space-y-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-400 font-medium" id="monitor-stage">Engine Ready</span>
+                <span class="text-white font-mono font-semibold" id="monitor-percent">100.0%</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-3 overflow-hidden border border-slate-700/50">
+                <div id="monitor-progress-bar" class="bg-gradient-to-r from-emerald-500 to-teal-400 h-3 rounded-full transition-all duration-300" style="width: 100%;"></div>
+              </div>
+              <div class="flex items-center justify-between text-[11px] text-slate-500 font-mono">
+                <span id="monitor-counter">518 / 518 cases processed</span>
+                <span id="monitor-time">Elapsed: 14.39s</span>
+              </div>
+            </div>
+
+            <!-- Real-Time Status Distribution Bar -->
+            <div class="mt-6 p-4 rounded-lg bg-slate-850/60 border border-slate-800 space-y-3">
+              <div class="text-xs font-semibold text-slate-300 flex items-center justify-between">
+                <span>Decision Distribution</span>
+                <span class="text-[11px] text-slate-500">100% Deterministic &bull; Zero External API Tokens</span>
+              </div>
+              <div class="w-full flex h-4 rounded-md overflow-hidden bg-slate-800">
+                <div id="bar-incomplete" title="INCOMPLETE (320)" class="bg-rose-500 transition-all duration-300" style="width: 61.8%;"></div>
+                <div id="bar-complete" title="COMPLETE (188)" class="bg-emerald-500 transition-all duration-300" style="width: 36.3%;"></div>
+                <div id="bar-na" title="NOT_APPLICABLE (10)" class="bg-amber-500 transition-all duration-300" style="width: 1.9%;"></div>
+              </div>
+              <div class="flex items-center justify-between text-[11px]">
+                <div class="flex items-center space-x-1.5">
+                  <span class="w-2.5 h-2.5 rounded-sm bg-rose-500"></span>
+                  <span class="text-slate-400">INCOMPLETE: <strong id="cnt-incomplete" class="text-white">320</strong></span>
+                </div>
+                <div class="flex items-center space-x-1.5">
+                  <span class="w-2.5 h-2.5 rounded-sm bg-emerald-500"></span>
+                  <span class="text-slate-400">COMPLETE: <strong id="cnt-complete" class="text-white">188</strong></span>
+                </div>
+                <div class="flex items-center space-x-1.5">
+                  <span class="w-2.5 h-2.5 rounded-sm bg-amber-500"></span>
+                  <span class="text-slate-400">NOT_APPLICABLE: <strong id="cnt-na" class="text-white">10</strong></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Action Buttons -->
+          <div class="pt-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center space-x-2 text-xs text-slate-400">
+              <span>Output: <code class="text-emerald-400 font-mono">output.csv</code></span>
+              <span>&bull;</span>
+              <span id="output-ready-pill" class="text-emerald-400 font-semibold">✓ Generated & Validated</span>
+            </div>
+
+            <div class="flex items-center space-x-2">
+              <button onclick="switchTab('results')" class="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-750 text-slate-200 text-xs font-medium border border-slate-700 transition">
+                Inspect 518 Results &rarr;
+              </button>
+              <button onclick="downloadOutputCsv()" class="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-md shadow-emerald-600/20 transition flex items-center space-x-1.5">
+                <span>⬇</span>
+                <span>Download output.csv</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 2: RESULTS EXPLORER                                  -->
+    <!-- ======================================================== -->
+    <section id="view-results" class="tab-view space-y-6 hidden">
+      
+      <!-- Filter Bar -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-4">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+          
+          <!-- Search Input -->
+          <div class="relative flex-1 max-w-md">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-500">🔍</span>
+            <input type="text" id="filter-search" oninput="debounceFilter()" placeholder="Search Case ID (e.g. case_100), Email, or Request Text..." class="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 placeholder-slate-500 font-mono">
+          </div>
+
+          <!-- Status Filters -->
+          <div class="flex flex-wrap items-center gap-2">
+            <button onclick="setStatusFilter('ALL')" id="filter-btn-ALL" class="status-filter-btn active px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 text-white border border-slate-700 transition">All (518)</button>
+            <button onclick="setStatusFilter('INCOMPLETE')" id="filter-btn-INCOMPLETE" class="status-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-950 text-rose-400 border border-slate-800 hover:bg-slate-850 transition">INCOMPLETE (320)</button>
+            <button onclick="setStatusFilter('COMPLETE')" id="filter-btn-COMPLETE" class="status-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-950 text-emerald-400 border border-slate-800 hover:bg-slate-850 transition">COMPLETE (188)</button>
+            <button onclick="setStatusFilter('NOT_APPLICABLE')" id="filter-btn-NOT_APPLICABLE" class="status-filter-btn px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-950 text-amber-400 border border-slate-800 hover:bg-slate-850 transition">NOT_APPLICABLE (10)</button>
+          </div>
+
+          <!-- PII Masking Toggle -->
+          <div class="flex items-center space-x-2 bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-800">
+            <label class="flex items-center space-x-2 cursor-pointer text-xs text-slate-300">
+              <input type="checkbox" id="mask-pii-toggle" checked onchange="loadResultsPage(1)" class="rounded text-emerald-500 bg-slate-900 border-slate-700 focus:ring-0">
+              <span>Mask PII</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results Table -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs">
+            <thead class="bg-slate-850/80 text-slate-400 uppercase font-semibold tracking-wider border-b border-slate-800">
+              <tr>
+                <th class="py-3 px-4">Case ID</th>
+                <th class="py-3 px-4">Customer Email</th>
+                <th class="py-3 px-4">Reported Claim</th>
+                <th class="py-3 px-4">Audited Truth</th>
+                <th class="py-3 px-4 text-center">Findings</th>
+                <th class="py-3 px-4 text-center">Remediation</th>
+                <th class="py-3 px-4 text-center">Verification</th>
+                <th class="py-3 px-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="results-table-body" class="divide-y divide-slate-800 font-mono text-slate-300">
+              <!-- Dynamically populated rows -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Table Footer / Pagination -->
+        <div class="bg-slate-850/60 px-4 py-3 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+          <div>
+            Showing <span id="pag-start" class="font-semibold text-white">1</span> to <span id="pag-end" class="font-semibold text-white">25</span> of <span id="pag-total" class="font-semibold text-white">518</span> cases
+          </div>
+          <div class="flex items-center space-x-2">
+            <button onclick="prevPage()" id="btn-prev-page" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-750 text-white disabled:opacity-40 disabled:cursor-not-allowed transition">Previous</button>
+            <span class="px-2 font-mono">Page <span id="pag-current" class="text-emerald-400 font-bold">1</span> / <span id="pag-pages">21</span></span>
+            <button onclick="nextPage()" id="btn-next-page" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-750 text-white disabled:opacity-40 disabled:cursor-not-allowed transition">Next</button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 3: CONTRACT VALIDATOR                                -->
+    <!-- ======================================================== -->
+    <section id="view-validator" class="tab-view space-y-6 hidden">
+      
+      <!-- Top Alert -->
+      <div class="bg-emerald-950/40 border border-emerald-500/30 rounded-xl p-5 flex items-start space-x-4">
+        <div class="text-2xl">🛡️</div>
+        <div class="space-y-1">
+          <h3 class="text-sm font-semibold text-emerald-400 flex items-center space-x-2">
+            <span>Automated 12-Point Contract Validator</span>
+            <span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/20 text-emerald-300 font-bold uppercase">100% Pass</span>
+          </h3>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Every row in <code class="text-emerald-300 font-mono">output.csv</code> is validated against all 12 structural requirements of HackerRank Orchestrate §6: exact header, consecutive step numbering, 7 required keys, strict phase ordering (<code class="text-emerald-300 font-mono">FINDING &rarr; REMEDIATION &rarr; VERIFICATION</code>), permitted operation/state tuples, manifest evidence citations, and empty arrays for non-deletion cases.
+          </p>
+          <div class="pt-2 text-[11px] text-slate-400 italic">
+            * Important Note: Structural validity strictly certifies adherence to grader constraints and formatting, but does not substitute for decision accuracy against hidden test cases.
+          </div>
+        </div>
+      </div>
+
+      <!-- Action & Summary -->
+      <div class="flex items-center justify-between">
+        <div class="text-xs text-slate-400">
+          Last Validated: <span id="val-timestamp" class="font-mono text-slate-200">2026-10-29T22:25:00Z</span> &bull; File: <span id="val-filename" class="font-mono text-emerald-400">output.csv</span>
+        </div>
+        <button onclick="runOutputValidation()" class="bg-slate-800 hover:bg-slate-750 border border-slate-700 text-slate-200 px-4 py-2 rounded-lg text-xs font-medium transition flex items-center space-x-1.5">
+          <span>🔄</span>
+          <span>Rerun Contract Validator</span>
+        </button>
+      </div>
+
+      <!-- Rule Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="validator-rules-grid">
+        <!-- Dynamically rendered 12 rules -->
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 4: PUBLIC BENCHMARK                                  -->
+    <!-- ======================================================== -->
+    <section id="view-benchmark" class="tab-view space-y-6 hidden">
+      
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <h3 class="text-base font-semibold text-white flex items-center space-x-2">
+              <span>📊</span>
+              <span>Public Sample Benchmark Evaluation</span>
+            </h3>
+            <p class="text-xs text-slate-400 mt-1">
+              Independent evaluation against <code class="text-emerald-400 font-mono">sample_deletion_requests.csv</code> (32 cases) and <code class="text-emerald-400 font-mono">sample_output.csv</code>.
+            </p>
+          </div>
+          <button onclick="runBenchmarkEvaluation()" id="btn-run-benchmark" class="bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2 px-4 rounded-lg text-xs transition shadow-md shadow-emerald-600/20 flex items-center space-x-1.5 self-start sm:self-auto">
+            <span>⚡</span>
+            <span>Run Benchmark Now</span>
+          </button>
+        </div>
+
+        <!-- Metric Cards Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 pt-2">
+          
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+            <div class="text-[11px] text-slate-400 font-medium">Status Accuracy</div>
+            <div class="text-2xl font-bold text-emerald-400 mt-1" id="bm-status-acc">100.0%</div>
+            <div class="text-[11px] text-slate-500 font-mono mt-1" id="bm-status-ratio">32 / 32 cases</div>
+            <p class="text-[10px] text-slate-500 mt-2">Identical status match across all sample cases.</p>
+          </div>
+
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+            <div class="text-[11px] text-slate-400 font-medium">Step Precision</div>
+            <div class="text-2xl font-bold text-teal-400 mt-1" id="bm-step-prec">80.5%</div>
+            <div class="text-[11px] text-slate-500 font-mono mt-1" id="bm-step-prec-ratio">140 / 174 steps</div>
+            <p class="text-[10px] text-slate-500 mt-2">Predicted steps grounded in ground-truth tuples.</p>
+          </div>
+
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+            <div class="text-[11px] text-slate-400 font-medium">Step Recall</div>
+            <div class="text-2xl font-bold text-cyan-400 mt-1" id="bm-step-rec">72.5%</div>
+            <div class="text-[11px] text-slate-500 font-mono mt-1" id="bm-step-rec-ratio">140 / 193 steps</div>
+            <p class="text-[10px] text-slate-500 mt-2">Ground-truth steps recovered by evidence engine.</p>
+          </div>
+
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+            <div class="text-[11px] text-slate-400 font-medium">Field-Level Accuracy</div>
+            <div class="text-2xl font-bold text-emerald-400 mt-1" id="bm-field-acc">100.0%</div>
+            <div class="text-[11px] text-slate-500 font-mono mt-1" id="bm-field-ratio">1218 / 1218 fields</div>
+            <p class="text-[10px] text-slate-500 mt-2">100% adherence across all 7 schema fields.</p>
+          </div>
+
+          <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+            <div class="text-[11px] text-slate-400 font-medium">Exact Sequence Match</div>
+            <div class="text-2xl font-bold text-slate-200 mt-1" id="bm-seq-acc">15.6%</div>
+            <div class="text-[11px] text-slate-500 font-mono mt-1" id="bm-seq-ratio">5 / 32 cases</div>
+            <p class="text-[10px] text-slate-500 mt-2">Identical step counts and ordered sequence.</p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Case by Case Evaluation Table -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+          <h4 class="text-sm font-semibold text-white">32 Sample Case Comparisons</h4>
+          <span class="text-xs text-slate-400 font-mono">case_01 &hellip; case_32</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs font-mono">
+            <thead class="bg-slate-850/80 text-slate-400 uppercase font-semibold border-b border-slate-800">
+              <tr>
+                <th class="py-3 px-4">Case ID</th>
+                <th class="py-3 px-4">Subject</th>
+                <th class="py-3 px-4">Predicted Status</th>
+                <th class="py-3 px-4">Ground Truth Status</th>
+                <th class="py-3 px-4 text-center">Status Match</th>
+                <th class="py-3 px-4 text-center">Pred Steps</th>
+                <th class="py-3 px-4 text-center">GT Steps</th>
+                <th class="py-3 px-4 text-center">Step Overlap</th>
+              </tr>
+            </thead>
+            <tbody id="benchmark-table-body" class="divide-y divide-slate-800 text-slate-300">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 5: EVIDENCE MANIFEST                                 -->
+    <!-- ======================================================== -->
+    <section id="view-evidence" class="tab-view space-y-6 hidden">
+      
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <h3 class="text-base font-semibold text-white flex items-center space-x-2">
+              <span>🗂️</span>
+              <span>Evidence File Index & Provenance</span>
+            </h3>
+            <p class="text-xs text-slate-400 mt-1">
+              94 participant-facing files under <code class="text-emerald-400 font-mono">dataset/evidence/</code> across SQLite, JSON, structured logs, PDFs, and screenshots.
+            </p>
+          </div>
+          <div class="flex items-center space-x-2 text-xs">
+            <span class="px-2.5 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700">79 Structured (100% Parsed)</span>
+            <span class="px-2.5 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700">4 PDFs (Flate Decompress)</span>
+            <span class="px-2.5 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700">11 Screenshots (OCR Gapped)</span>
+          </div>
+        </div>
+
+        <!-- Search Evidence -->
+        <div class="max-w-md">
+          <input type="text" id="evidence-search" oninput="filterEvidenceTable()" placeholder="Search evidence file ID, origin, or path..." class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 font-mono">
+        </div>
+      </div>
+
+      <!-- Evidence Table -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs font-mono">
+            <thead class="bg-slate-850/80 text-slate-400 uppercase font-semibold border-b border-slate-800">
+              <tr>
+                <th class="py-3 px-4">File ID</th>
+                <th class="py-3 px-4">Origin / System</th>
+                <th class="py-3 px-4">Relative Path</th>
+                <th class="py-3 px-4">Captured At</th>
+                <th class="py-3 px-4">Type</th>
+                <th class="py-3 px-4 text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody id="evidence-table-body" class="divide-y divide-slate-800 text-slate-300">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 6: ARTIFACTS & DOWNLOADS                             -->
+    <!-- ======================================================== -->
+    <section id="view-artifacts" class="tab-view space-y-6 hidden">
+      
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-2">
+        <h3 class="text-base font-semibold text-white flex items-center space-x-2">
+          <span>📦</span>
+          <span>Verified Submission Artifacts & Reports</span>
+        </h3>
+        <p class="text-xs text-slate-400">
+          Official deliverables ready for submission to HackerRank Orchestrate. Download verified packages directly.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        
+        <!-- output.csv -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 flex flex-col justify-between space-y-4">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Primary Deliverable</span>
+              <span class="text-xs text-slate-500 font-mono">~510 KB</span>
+            </div>
+            <h4 class="text-base font-bold text-white mt-2 font-mono">output.csv</h4>
+            <p class="text-xs text-slate-400 mt-1">
+              518 audited rows with verified steps_json array. Adheres 100% to challenge schema.
+            </p>
+          </div>
+          <a href="/api/download/output.csv" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-medium py-2 px-3 rounded-lg text-xs transition text-center shadow-md shadow-emerald-600/20">
+            ⬇ Download output.csv
+          </a>
+        </div>
+
+        <!-- code.zip -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 flex flex-col justify-between space-y-4">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold px-2 py-0.5 rounded bg-teal-500/10 text-teal-400 border border-teal-500/20">Code Archive</span>
+              <span class="text-xs text-slate-500 font-mono">63.6 KB</span>
+            </div>
+            <h4 class="text-base font-bold text-white mt-2 font-mono">code.zip</h4>
+            <p class="text-xs text-slate-400 mt-1">
+              Clean submission package: code/, README.md, evaluation reports. Excludes caches and datasets.
+            </p>
+          </div>
+          <a href="/api/download/artifact/code.zip" class="w-full bg-slate-800 hover:bg-slate-750 text-slate-200 font-medium py-2 px-3 rounded-lg text-xs transition text-center border border-slate-700">
+            ⬇ Download code.zip
+          </a>
+        </div>
+
+        <!-- agent-trace.zip -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 flex flex-col justify-between space-y-4">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">Genuine Trace</span>
+              <span class="text-xs text-slate-500 font-mono">1.4 MB</span>
+            </div>
+            <h4 class="text-base font-bold text-white mt-2 font-mono">agent-trace.zip</h4>
+            <p class="text-xs text-slate-400 mt-1">
+              Unedited Antigravity conversation transcripts and chunks according to agent_trace_instructions.md.
+            </p>
+          </div>
+          <a href="/api/download/artifact/agent-trace.zip" class="w-full bg-slate-800 hover:bg-slate-750 text-slate-200 font-medium py-2 px-3 rounded-lg text-xs transition text-center border border-slate-700">
+            ⬇ Download agent-trace.zip
+          </a>
+        </div>
+
+        <!-- log.txt -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 flex flex-col justify-between space-y-4">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold px-2 py-0.5 rounded bg-slate-750 text-slate-300 border border-slate-700">Audit Trail</span>
+              <span class="text-xs text-slate-500 font-mono">~30 KB</span>
+            </div>
+            <h4 class="text-base font-bold text-white mt-2 font-mono">log.txt</h4>
+            <p class="text-xs text-slate-400 mt-1">
+              Append-only session and turn log adhering strictly to AGENTS.md §5 with authoritative harness metadata.
+            </p>
+          </div>
+          <a href="/api/download/artifact/log.txt" class="w-full bg-slate-800 hover:bg-slate-750 text-slate-200 font-medium py-2 px-3 rounded-lg text-xs transition text-center border border-slate-700">
+            ⬇ Download log.txt
+          </a>
+        </div>
+
+        <!-- evaluation_report.md -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 flex flex-col justify-between space-y-4">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20">Audit Report</span>
+              <span class="text-xs text-slate-500 font-mono">10 KB</span>
+            </div>
+            <h4 class="text-base font-bold text-white mt-2 font-mono">evaluation_report.md</h4>
+            <p class="text-xs text-slate-400 mt-1">
+              Comprehensive report detailing benchmark accuracy, custom test cases, and architectural failure fixes.
+            </p>
+          </div>
+          <a href="/api/download/report/evaluation" class="w-full bg-slate-800 hover:bg-slate-750 text-slate-200 font-medium py-2 px-3 rounded-lg text-xs transition text-center border border-slate-700">
+            ⬇ Download evaluation_report.md
+          </a>
+        </div>
+
+        <!-- usage_report.md -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 flex flex-col justify-between space-y-4">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-semibold px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">Cost Report</span>
+              <span class="text-xs text-slate-500 font-mono">3.5 KB</span>
+            </div>
+            <h4 class="text-base font-bold text-white mt-2 font-mono">usage_report.md</h4>
+            <p class="text-xs text-slate-400 mt-1">
+              Token usage and runtime analysis proving 0 external API calls ($0.000000 inference cost).
+            </p>
+          </div>
+          <a href="/api/download/report/usage" class="w-full bg-slate-800 hover:bg-slate-750 text-slate-200 font-medium py-2 px-3 rounded-lg text-xs transition text-center border border-slate-700">
+            ⬇ Download usage_report.md
+          </a>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- TAB 7: ARCHITECTURE & DOCS                               -->
+    <!-- ======================================================== -->
+    <section id="view-architecture" class="tab-view space-y-6 hidden">
+      
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-6">
+        <div>
+          <h3 class="text-base font-semibold text-white flex items-center space-x-2">
+            <span>ℹ️</span>
+            <span>Five-Stage Symbolic Deletion-Audit Architecture</span>
+          </h3>
+          <p class="text-xs text-slate-400 mt-1">
+            Engineered for high performance, zero data leakage, and 100% deterministic reproducibility.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+            <div class="text-emerald-400 text-xs font-mono font-bold">STAGE 1</div>
+            <h4 class="text-xs font-semibold text-white">Intent Classification</h4>
+            <p class="text-[11px] text-slate-400">Multilingual intent analysis distinguishing deletion from access, correction, export, marketing, and login requests.</p>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+            <div class="text-emerald-400 text-xs font-mono font-bold">STAGE 2</div>
+            <h4 class="text-xs font-semibold text-white">Historical Identity</h4>
+            <p class="text-[11px] text-slate-400">Reconstructs exact active identifiers (email, phone, hash, user_id) as of each case's audit_at cutoff without lookahead drift.</p>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+            <div class="text-emerald-400 text-xs font-mono font-bold">STAGE 3</div>
+            <h4 class="text-xs font-semibold text-white">Evidence Indexing</h4>
+            <p class="text-[11px] text-slate-400">In-memory SQLite schema inspection, JSON tree walking, log trace aggregation, and native PDF Flate extraction.</p>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+            <div class="text-emerald-400 text-xs font-mono font-bold">STAGE 4</div>
+            <h4 class="text-xs font-semibold text-white">Correlation Engine</h4>
+            <p class="text-[11px] text-slate-400">Correlates observed resource IDs, replica drift, active data connectors, and backup restore risks against user timeline.</p>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+            <div class="text-emerald-400 text-xs font-mono font-bold">STAGE 5</div>
+            <h4 class="text-xs font-semibold text-white">Policy Engine</h4>
+            <p class="text-[11px] text-slate-400">Applies 14 deletion rules, checks legal holds, synthesizes findings, ordered remediation, and post-verification checks.</p>
+          </div>
+        </div>
+
+        <!-- Deletion Rules Matrix -->
+        <div class="space-y-3 pt-4 border-t border-slate-800">
+          <h4 class="text-xs font-semibold text-slate-200">Policy Rules Matrix (deletion_rules.csv)</h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-[11px] font-mono">
+            <div class="p-3 rounded-lg bg-slate-850 border border-slate-800">
+              <span class="text-emerald-400 font-bold">rule_01</span>: ACCOUNT_PROFILE &rarr; DELETE
+            </div>
+            <div class="p-3 rounded-lg bg-slate-850 border border-slate-800">
+              <span class="text-emerald-400 font-bold">rule_02</span>: AUTH_CREDENTIAL &rarr; DELETE
+            </div>
+            <div class="p-3 rounded-lg bg-slate-850 border border-slate-800">
+              <span class="text-amber-400 font-bold">rule_03</span>: ORDER_RECORD &rarr; ANONYMIZE
+            </div>
+            <div class="p-3 rounded-lg bg-slate-850 border border-slate-800">
+              <span class="text-amber-400 font-bold">rule_04</span>: INVOICE &rarr; REDACT
+            </div>
+            <div class="p-3 rounded-lg bg-slate-850 border border-slate-800">
+              <span class="text-emerald-400 font-bold">rule_05</span>: SUPPORT_TICKET &rarr; REDACT
+            </div>
+            <div class="p-3 rounded-lg bg-slate-850 border border-slate-800">
+              <span class="text-emerald-400 font-bold">rule_06</span>: MARKETING_PROFILE &rarr; DELETE
+            </div>
+            <div class="p-3 rounded-lg bg-slate-850 border border-slate-800">
+              <span class="text-cyan-400 font-bold">rule_07</span>: DATA_CONNECTOR &rarr; DISABLE
+            </div>
+            <div class="p-3 rounded-lg bg-slate-850 border border-slate-800">
+              <span class="text-cyan-400 font-bold">rule_08</span>: BACKUP_RESTORE &rarr; BLOCK
+            </div>
+            <div class="p-3 rounded-lg bg-slate-850 border border-slate-800">
+              <span class="text-rose-400 font-bold">rule_13</span>: LEGAL_HOLD_RECORD &rarr; RETAIN
+            </div>
+          </div>
+        </div>
+
+        <!-- Setup & Run Instructions -->
+        <div class="space-y-3 pt-4 border-t border-slate-800">
+          <h4 class="text-xs font-semibold text-slate-200">Terminal & CLI Execution Commands</h4>
+          <div class="bg-slate-950 p-4 rounded-lg font-mono text-xs text-slate-300 space-y-2 border border-slate-800">
+            <div><span class="text-slate-500"># 1. Run core audit pipeline via Python CLI:</span></div>
+            <div class="text-emerald-400">python code/main.py</div>
+            <div><span class="text-slate-500"># 2. Run automated test suite:</span></div>
+            <div class="text-emerald-400">python code/tests/run_tests.py</div>
+            <div><span class="text-slate-500"># 3. Launch this Web Application:</span></div>
+            <div class="text-emerald-400">python run_web.py</div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ======================================================== -->
+  <!-- CASE DETAIL MODAL / DRAWER                               -->
+  <!-- ======================================================== -->
+  <div id="case-modal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      
+      <!-- Modal Header -->
+      <div class="p-5 border-b border-slate-800 flex items-center justify-between bg-slate-850/60">
+        <div class="flex items-center space-x-3">
+          <span class="text-xl">📄</span>
+          <div>
+            <div class="flex items-center space-x-2">
+              <h3 class="font-bold text-white text-base font-mono" id="modal-case-id">case_100</h3>
+              <span id="modal-status-badge" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-500/20 text-rose-400 border border-rose-500/30">INCOMPLETE</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-0.5" id="modal-customer-email">customer@example.com</p>
+          </div>
+        </div>
+        <button onclick="closeCaseModal()" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 text-lg">&times;</button>
+      </div>
+
+      <!-- Modal Body (Scrollable) -->
+      <div class="p-6 overflow-y-auto space-y-6 text-xs flex-1">
+        
+        <!-- Metadata Overview -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-950 p-4 rounded-xl border border-slate-800">
+          <div>
+            <span class="text-slate-500 block text-[10px] uppercase font-semibold">Requested At</span>
+            <span class="text-slate-200 font-mono" id="modal-req-at">-</span>
+          </div>
+          <div>
+            <span class="text-slate-500 block text-[10px] uppercase font-semibold">Audit Cutoff</span>
+            <span class="text-emerald-400 font-mono" id="modal-audit-at">-</span>
+          </div>
+          <div>
+            <span class="text-slate-500 block text-[10px] uppercase font-semibold">Reported Claim</span>
+            <span class="text-cyan-400 font-mono" id="modal-reported-status">-</span>
+          </div>
+          <div>
+            <span class="text-slate-500 block text-[10px] uppercase font-semibold">Steps Planned</span>
+            <span class="text-white font-mono font-bold" id="modal-steps-count">0</span>
+          </div>
+        </div>
+
+        <!-- Request Text -->
+        <div class="space-y-1">
+          <span class="text-slate-400 font-semibold text-[11px] uppercase tracking-wider">User Request Text</span>
+          <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 text-slate-300 font-mono text-[11px] leading-relaxed" id="modal-req-text">
+            -
+          </div>
+        </div>
+
+        <!-- Steps Timeline -->
+        <div class="space-y-3">
+          <div class="flex items-center justify-between">
+            <span class="text-slate-400 font-semibold text-[11px] uppercase tracking-wider">Generated Step Sequence</span>
+            <span class="text-[11px] text-slate-500 font-mono">Strict Ordering: Finding &rarr; Remediation &rarr; Verification</span>
+          </div>
+
+          <div id="modal-steps-container" class="space-y-2.5">
+            <!-- Step cards rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- Raw JSON Toggle -->
+        <div class="space-y-2 pt-2 border-t border-slate-800">
+          <button onclick="toggleRawJson()" class="text-[11px] text-slate-400 hover:text-slate-200 font-mono flex items-center space-x-1">
+            <span id="raw-json-arrow">&plus;</span>
+            <span>View Raw steps_json</span>
+          </button>
+          <pre id="modal-raw-json" class="hidden bg-slate-950 p-4 rounded-xl border border-slate-800 text-slate-300 font-mono text-[11px] overflow-x-auto max-h-48"></pre>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 border-t border-slate-800 bg-slate-850/60 flex items-center justify-end">
+        <button onclick="closeCaseModal()" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-750 text-white text-xs font-medium transition">
+          Close
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-850 bg-slate-950 py-4 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
+      <div>
+        Ghost Audit OS &bull; HackerRank Orchestrate (October 2026) Deletion-Audit Challenge
+      </div>
+      <div class="flex items-center space-x-4">
+        <span>Deterministic Python Engine</span>
+        <span>&bull;</span>
+        <a href="https://www.hackerrank.com/contests/hackerrank-orchestrate-october26/challenges/ghost-data-still-exists" target="_blank" rel="noopener" class="text-emerald-400 hover:underline">Challenge Link</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- App JS -->
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

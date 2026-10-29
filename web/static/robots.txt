@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /static/temp/
+
+Sitemap: https://ghost-audit-os.onrender.com/sitemap.xml
